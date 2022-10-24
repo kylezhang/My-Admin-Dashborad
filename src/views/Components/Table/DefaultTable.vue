@@ -22,38 +22,20 @@ const columns: TableColumn[] = [
     type: 'index'
   },
   {
-    field: 'title',
-    label: t('tableDemo.title')
+    field: 'repo',
+    label: t('tableDemo.repo')
   },
   {
-    field: 'author',
-    label: t('tableDemo.author')
+    field: 'stars',
+    label: t('tableDemo.stars')
   },
   {
-    field: 'display_time',
-    label: t('tableDemo.displayTime')
+    field: 'forks',
+    label: t('tableDemo.forks')
   },
   {
-    field: 'importance',
-    label: t('tableDemo.importance'),
-    formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
-      return h(
-        ElTag,
-        {
-          type: cellValue === 1 ? 'success' : cellValue === 2 ? 'warning' : 'danger'
-        },
-        () =>
-          cellValue === 1
-            ? t('tableDemo.important')
-            : cellValue === 2
-            ? t('tableDemo.good')
-            : t('tableDemo.commonly')
-      )
-    }
-  },
-  {
-    field: 'pageviews',
-    label: t('tableDemo.pageviews')
+    field: 'open_issues_prs_count',
+    label: t('tableDemo.open_issues_prs_count')
   },
   {
     field: 'action',
@@ -69,15 +51,37 @@ const getTableList = async (params?: Params) => {
   const res = await getTableListApi(
     params || {
       pageIndex: 1,
-      pageSize: 10
+      pageSize: 10,
+      github_id: 'AgoraIO'
     }
   )
-    .catch(() => {})
+    .catch((e) => {
+      console.error(e)
+    })
     .finally(() => {
       loading.value = false
     })
+
+  const arr: {
+    id: string
+    repo: string
+    stars: string
+    forks: string
+    open_issues_prs_count: number
+  }[] = []
+
   if (res) {
-    tableDataList.value = res.data.list
+    for (const d of res) {
+      arr.push({
+        id: d.id,
+        repo: d.name,
+        stars: d.stargazers_count,
+        forks: d.forks_count,
+        open_issues_prs_count: d.open_issues_count
+      })
+    }
+
+    tableDataList.value = arr
   }
 }
 
@@ -86,15 +90,28 @@ getTableList()
 const actionFn = (data: TableSlotDefault) => {
   console.log(data)
 }
+
+const showExpandedRows = (show: boolean) => {
+  const { setProps } = getTableList
+  setProps({
+    expand: show
+  })
+}
 </script>
 
 <template>
   <ContentWrap :title="t('tableDemo.table')" :message="t('tableDemo.tableDes')">
+    <ElButton @click="showExpandedRows(true)">{{ t('tableDemo.showExpandedRows') }}</ElButton>
+    <ElButton @click="showExpandedRows(false)">{{ t('tableDemo.hiddenExpandedRows') }}</ElButton>
+
     <Table :columns="columns" :data="tableDataList" :loading="loading">
-      <template #action="data">
-        <ElButton type="primary" @click="actionFn(data as TableSlotDefault)">
-          {{ t('tableDemo.action') }}
-        </ElButton>
+      <template #expand="data">
+        <div class="ml-30px">
+          <div>{{ t('tableDemo.title') }}：{{ data.row.repo }}</div>
+          <div>{{ t('tableDemo.author') }}：{{ data.row.stars }}</div>
+          <div>{{ t('tableDemo.displayTime') }}：{{ data.row.forks }}</div>
+          <div>{{ t('tableDemo.displayTime') }}：{{ data.row.open_issues_prs_count }}</div>
+        </div>
       </template>
     </Table>
   </ContentWrap>

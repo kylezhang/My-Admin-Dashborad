@@ -23,6 +23,7 @@ getList()
 
 const { t } = useI18n()
 
+// 表字段定义
 const columns = reactive<TableColumn[]>([
   {
     field: 'index',
@@ -30,44 +31,20 @@ const columns = reactive<TableColumn[]>([
     type: 'index'
   },
   {
-    field: 'content',
-    label: t('tableDemo.header'),
-    children: [
-      {
-        field: 'title',
-        label: t('tableDemo.title')
-      },
-      {
-        field: 'author',
-        label: t('tableDemo.author')
-      },
-      {
-        field: 'display_time',
-        label: t('tableDemo.displayTime')
-      },
-      {
-        field: 'importance',
-        label: t('tableDemo.importance'),
-        formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
-          return h(
-            ElTag,
-            {
-              type: cellValue === 1 ? 'success' : cellValue === 2 ? 'warning' : 'danger'
-            },
-            () =>
-              cellValue === 1
-                ? t('tableDemo.important')
-                : cellValue === 2
-                ? t('tableDemo.good')
-                : t('tableDemo.commonly')
-          )
-        }
-      },
-      {
-        field: 'pageviews',
-        label: t('tableDemo.pageviews')
-      }
-    ]
+    field: 'repo',
+    label: t('tableDemo.repo')
+  },
+  {
+    field: 'stars',
+    label: t('tableDemo.stars')
+  },
+  {
+    field: 'forks',
+    label: t('tableDemo.forks')
+  },
+  {
+    field: 'open_issues_prs_count',
+    label: t('tableDemo.open_issues_prs_count')
   },
   {
     field: 'action',
@@ -75,6 +52,7 @@ const columns = reactive<TableColumn[]>([
   }
 ])
 
+// 一些操作
 const actionFn = (data: TableSlotDefault) => {
   console.log(data)
 }

@@ -2,7 +2,8 @@ import request from '@/config/axios'
 import type { TableData } from './types'
 
 export const getTableListApi = (params: any): Promise<IResponse> => {
-  return request.get({ url: '/example/list', params })
+  const url = `https://api.github.com/users/${params.github_id}/repos?page=${params.pageIndex}`
+  return request.get({ url })
 }
 
 export const saveTableApi = (data: Partial<TableData>): Promise<IResponse> => {
